@@ -2,7 +2,18 @@
 name = "summon-service"
 version = "0.1.0"
 edition = "2021"
+authors = ["Lahcène Belhadi <lahcene.belhadi@gmail.com>"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# Actix web
+# https://crates.io/crates/actix-web
+[dependencies.actix-web]
+version = "4.3"
 
-[dependencies]
+# Logging
+# https://crates.io/crates/env_logger
+[dependencies.env_logger]
+version = "0.10"
+
+# https://crates.io/crates/log
+[dependencies.log]
+version = "0.4"
