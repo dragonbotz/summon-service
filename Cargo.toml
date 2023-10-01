@@ -17,3 +17,8 @@ version = "0.10"
 # https://crates.io/crates/log
 [dependencies.log]
 version = "0.4"
+
+# HTTP Client
+# https://crates.io/crates/reqwest
+[dependencies.reqwest]
+version = "0.11"
