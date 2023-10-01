@@ -3,9 +3,12 @@
 //! This is the entry point of the summon service
 //!
 //! Authors: Lahcène Belhadi <lahcene.belhadi@gmail.com>
+pub mod core;
 
 use actix_web::{HttpServer, App};
 use log::{error, info};
+
+use crate::core::api;
 
 #[actix_web::main]
 async fn main() {
@@ -14,6 +17,7 @@ async fn main() {
 
     let server = HttpServer::new(move || {
         App::new()
+            .service(api::root)
     })
         .bind(("0.0.0.0", 8083));
 
