@@ -23,7 +23,7 @@ async fn main() {
             .service(api::root)
             .service(api::summon)
     })
-    .bind(("0.0.0.0", 8083));
+    .bind(("0.0.0.0", 8080));
 
     if let Err(error) = server {
         error!("An error occured while setting up web server: {error}");
