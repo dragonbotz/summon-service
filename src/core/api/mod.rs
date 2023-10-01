@@ -12,7 +12,7 @@ async fn root() -> impl Responder {
 
 #[get("/summon")]
 async fn summon(http_client: web::Data<reqwest::Client>) -> impl Responder {
-    let response = http_client.get("http://127.0.0.1:8082/").send().await;
+    let response = http_client.get("http://dbz-portal-service:58181/").send().await;
 
     if let Err(error) = response {
         error!("[/summon] An error occured: {}", error);
