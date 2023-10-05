@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Lahcène Belhadi <lahcene.belhadi@gmail.com>"]
 
+[dependencies.dbzlib-rs]
+path = "dbzlib-rs"
+
 # Actix web
 # https://crates.io/crates/actix-web
 [dependencies.actix-web]
@@ -22,3 +25,4 @@ version = "0.4"
 # https://crates.io/crates/reqwest
 [dependencies.reqwest]
 version = "0.11"
+features = ["json"]
