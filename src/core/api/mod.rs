@@ -1,68 +1,47 @@
 //! This module contains the service's api implementation
 //!
 //! Authors: Lahcène Belhadi <lahcene.belhadi@gmail.com>
+use crate::utils;
 use actix_web::{get, web, HttpResponse, Responder};
-use dbzlib_rs::model::{
-    portal::PortalContent,
-    character::Character,
-};
-use log::{debug, error};
-use reqwest::Response;
-use reqwest::header::CONTENT_TYPE;
+use dbzlib_rs::model::{character::Character, portal::PortalContent};
+use log::debug;
 
 #[get("/")]
 async fn root() -> impl Responder {
     HttpResponse::Ok().body("Hello and welcome to Dragon Bot Z's summon service!")
 }
 
+/// Retrieves current portal data and then draws a random character from the
+/// portal content. If an error occured during the process, returns an empty
+/// JSON
 #[get("/summon")]
 async fn summon(http_client: web::Data<reqwest::Client>) -> impl Responder {
-    let response = http_client
-        .get("http://dbz-portal-service:8080/get-content/1")
-        .send()
-        .await;
+    // fetches current portal content
+    let portal_content_result = utils::get_current_portal_content(&http_client).await;
 
-    if let Err(error) = response {
-        error!("[/summon] An error occured: {}", error);
-        return HttpResponse::InternalServerError().body(format!("{error}"));
+    if let Err(error) = portal_content_result {
+        debug!("{}", error);
+        return HttpResponse::Ok().json({});
     }
-    let response: Response = response.unwrap();
-
-    let content = response.json::<PortalContent>().await;
-    if let Err(error) = content {
-        error!(
-            "[/summon] An error occured while fetching the portal content: {}",
-            error
-        );
-        return HttpResponse::InternalServerError().body(format!("{error}"));
-    }
-    let content: PortalContent = content.unwrap();
-
-    debug!("portal content: {:?}", content);
+    let portal_content: PortalContent = portal_content_result.unwrap();
 
     // resolve characters
-    let response_characters = http_client
-        .get("http://dbz-character-service:8080/get-many")
-        .header(CONTENT_TYPE, "application/json")
-        .json(&content.characters())
-        .send()
-        .await;
+    let characters_result =
+        utils::get_characters_from_portal_content(&http_client, &portal_content).await;
 
-    if let Err(error) = response_characters {
-        error!("[/summon] An error occured while fetching characters: {}", error);
-        return HttpResponse::InternalServerError().body(format!("{error}"))
+    if let Err(error) = characters_result {
+        debug!("{}", error);
+        return HttpResponse::Ok().json({});
     }
-    let response_characters = response_characters.unwrap();
-    let characters = response_characters.json::<Vec<Character>>().await;
+    let characters: Vec<Character> = characters_result.unwrap();
 
-    debug!("No err");
+    // draw a character from the vector
+    let character = utils::draw_character_from_vec(&characters);
 
-    if let Err(error) = characters {
-        return HttpResponse::InternalServerError().body(format!("zizi {error}"));
+    if let Err(error) = character {
+        debug!("{}", error);
+        return HttpResponse::Ok().json({});
     }
-    let characters = characters.unwrap();
 
-    debug!("No error so far");
-
-    HttpResponse::Ok().body("Ok 👌")
+    HttpResponse::Ok().json(character.unwrap())
 }
