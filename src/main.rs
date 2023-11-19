@@ -4,6 +4,7 @@
 //!
 //! Authors: Lahcène Belhadi <lahcene.belhadi@gmail.com>
 pub mod core;
+pub mod utils;
 
 use actix_web::{web, App, HttpServer};
 use log::{error, info};
