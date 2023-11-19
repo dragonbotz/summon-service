@@ -1,8 +1,33 @@
 [package]
 name = "summon-service"
-version = "0.1.0"
+version = "0.1.20"
 edition = "2021"
+authors = ["Lahcène Belhadi <lahcene.belhadi@gmail.com>"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies.dbzlib-rs]
+path = "dbzlib-rs"
 
-[dependencies]
+# Actix web
+# https://crates.io/crates/actix-web
+[dependencies.actix-web]
+version = "4.3"
+
+# Logging
+# https://crates.io/crates/env_logger
+[dependencies.env_logger]
+version = "0.10"
+
+# https://crates.io/crates/log
+[dependencies.log]
+version = "0.4"
+
+# HTTP Client
+# https://crates.io/crates/reqwest
+[dependencies.reqwest]
+version = "0.11"
+features = ["json"]
+
+# Random
+# https://crates.io/crates/rand
+[dependencies.rand]
+version = "0.8"
