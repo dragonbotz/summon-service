@@ -8,6 +8,7 @@ use dbzlib_rs::model::portal::PortalContent;
 use dbzlib_rs::util::exception::{ExcResult, Exception};
 use rand::prelude::*;
 use std::collections::HashMap;
+use log::debug;
 
 /// Retrieves current portal content
 ///
@@ -77,15 +78,15 @@ pub fn draw_character_from_vec(characters: &Vec<Character>) -> ExcResult<Charact
 
     let mut draw_from: &Vec<Character> = &vec![];
     if random_number <= droprate_extreme_origin {
-        draw_from = &characters_sorted[&0]; 
+        draw_from = &characters_sorted[&4]; 
     } else if random_number <= droprate_extreme {
-        draw_from = &characters_sorted[&1];
+        draw_from = &characters_sorted[&3];
     } else if random_number <= droprate_super {
         draw_from = &characters_sorted[&2];
     } else if random_number <= droprate_uncommon {
-        draw_from = &characters_sorted[&3];
+        draw_from = &characters_sorted[&1];
     } else {
-        draw_from = &characters_sorted[&4];
+        draw_from = &characters_sorted[&0];
     }
 
     match draw_from.choose(&mut rand::thread_rng()) {
