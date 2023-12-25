@@ -6,7 +6,9 @@
 use dbzlib_rs::model::character::Character;
 use dbzlib_rs::model::portal::PortalContent;
 use dbzlib_rs::util::exception::{ExcResult, Exception};
-use rand::seq::SliceRandom;
+use rand::prelude::*;
+use std::collections::HashMap;
+use log::debug;
 
 /// Retrieves current portal content
 ///
@@ -63,7 +65,31 @@ pub async fn get_characters_from_portal_content(
 /// # Arguments
 /// * characters: `Vec<Character>` - the vector containing the characters
 pub fn draw_character_from_vec(characters: &Vec<Character>) -> ExcResult<Character> {
-    match characters.choose(&mut rand::thread_rng()) {
+    let characters_sorted: HashMap<i16, Vec<Character>> = sort_characters_by_rarity(characters);
+
+    // droprates
+    let droprate_uncommon = 0.4;
+    let droprate_super = 0.2;
+    let droprate_extreme = 0.1;
+    let droprate_extreme_origin = 0.01;
+
+    // generate random number
+    let random_number: f32 = rand::thread_rng().gen();
+
+    let mut draw_from: &Vec<Character> = &vec![];
+    if random_number <= droprate_extreme_origin {
+        draw_from = &characters_sorted[&4]; 
+    } else if random_number <= droprate_extreme {
+        draw_from = &characters_sorted[&3];
+    } else if random_number <= droprate_super {
+        draw_from = &characters_sorted[&2];
+    } else if random_number <= droprate_uncommon {
+        draw_from = &characters_sorted[&1];
+    } else {
+        draw_from = &characters_sorted[&0];
+    }
+
+    match draw_from.choose(&mut rand::thread_rng()) {
         Some(character) => return Ok(character.clone()),
         None => {
             return Err(Exception::DrawCharacter(
@@ -71,4 +97,28 @@ pub fn draw_character_from_vec(characters: &Vec<Character>) -> ExcResult<Charact
             ))
         }
     };
+}
+
+/// Sort characters by rarity
+///
+/// # Arguments
+/// * characters: `Vec<Character> - The character vector
+///
+/// # Returns
+/// A Map containing the characters sorted by rarity
+fn sort_characters_by_rarity(characters: &Vec<Character>) -> HashMap<i16, Vec<Character>> {
+    let mut map: HashMap<i16, Vec<Character>> = HashMap::new();
+
+    // init keys
+    for i in 0..6 {
+        map.insert(i, vec![]);
+    }
+
+    // insert characters
+    for character in characters {
+        map.get_mut(&character.rarity())
+            .map(|value| value.push(character.clone()));
+    }
+
+    map
 }
